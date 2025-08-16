@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Box,
   Button,
@@ -11,7 +12,12 @@ import {
   Typography
 } from "@mui/material";
 
+// Use environment variable
+const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/topics/";
+
 export default function CreateTopic() {
+  const router = useRouter();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState("");
@@ -19,19 +25,71 @@ export default function CreateTopic() {
   const [allowReport, setAllowReport] = useState(false);
   const [onlyLoggedIn, setOnlyLoggedIn] = useState(false);
 
+  const [errors, setErrors] = useState<{
+    title?: string;
+    description?: string;
+    deadline?: string;
+    maxResponses?: string;
+    general?: string;
+  }>({});
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Placeholder token; integrate with your auth system
+  const authToken = "YOUR_AUTH_TOKEN_HERE";
+
   const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setErrors({});
+
+    const newErrors: typeof errors = {};
+
+    // Frontend validation
+    if (!title.trim()) {
+      newErrors.title = "Title is required.";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setIsSubmitting(false);
+      return;
+    }
+
     const topicData = {
-      title,           // This is now the main "question"
-      description,
-      deadline,
-      maxResponses,
-      allowReport,
-      onlyLoggedIn
+      title: title.trim(),
+      description: description.trim() || null,
+      deadline: deadline || null,
+      max_responses: maxResponses ? Number(maxResponses) : null,
+      allow_report: allowReport,
+      only_logged_in: onlyLoggedIn,
     };
 
-    // TODO: Replace with your actual API call
-    console.log("Submitting topic:", topicData);
-    alert("Topic created! (Check console)");
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topics/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(topicData),
+      });
+
+      if (response.ok) {
+        // On success, redirect to dashboard
+        router.push("/dashboard");
+      } else {
+        const errorData = await response.json();
+        const backendErrors: { [key: string]: string } = {};
+        for (const key in errorData) {
+          backendErrors[key] = Array.isArray(errorData[key])
+            ? errorData[key].join(", ")
+            : String(errorData[key]);
+        }
+        setErrors(backendErrors);
+      }
+    } catch (error) {
+      setErrors({ general: "Network error. Make sure the backend is running." });
+      console.error(error);
+    }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -49,19 +107,22 @@ export default function CreateTopic() {
           required
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          error={!!errors.title}
+          helperText={errors.title}
           sx={{ mb: 3 }}
         />
 
-        {/* Description */}
+        {/* Description (optional) */}
         <TextField
-          label="Description"
+          label="Description (optional)"
           variant="outlined"
           fullWidth
           multiline
           rows={3}
-          required
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          error={!!errors.description}
+          helperText={errors.description}
           sx={{ mb: 3 }}
         />
 
@@ -73,6 +134,8 @@ export default function CreateTopic() {
           fullWidth
           value={deadline}
           onChange={(e) => setDeadline(e.target.value)}
+          error={!!errors.deadline}
+          helperText={errors.deadline}
           sx={{ mb: 3 }}
         />
 
@@ -83,6 +146,8 @@ export default function CreateTopic() {
           fullWidth
           value={maxResponses}
           onChange={(e) => setMaxResponses(e.target.value)}
+          error={!!errors.maxResponses}
+          helperText={errors.maxResponses}
           sx={{ mb: 3 }}
         />
 
@@ -98,10 +163,22 @@ export default function CreateTopic() {
 
         {/* Submit */}
         <Box sx={{ mt: 4 }}>
-          <Button variant="contained" color="primary" onClick={handleSubmit}>
-            Create Topic
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Submitting..." : "Create Topic"}
           </Button>
         </Box>
+
+        {/* General errors */}
+        {errors.general && (
+          <Typography color="error" sx={{ mt: 2 }}>
+            {errors.general}
+          </Typography>
+        )}
       </Paper>
     </Container>
   );
