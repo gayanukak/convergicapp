@@ -25,7 +25,7 @@ export default function HostPage() {
   useEffect(() => {
     const fetchTopic = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topics/${code}/`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/out/${code}/`);
         if (!res.ok) throw new Error("Topic not found");
         const data = await res.json();
         setTopic(data);

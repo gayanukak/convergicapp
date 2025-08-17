@@ -85,8 +85,8 @@ export default function CreateTopic() {
       const data = await response.json();
 
       // Set the guest and host links
-      setGuestLink(`${GUEST_BASE}${data.code}`);
-      setHostLink(`${HOST_BASE}${data.code}`);
+      setGuestLink(data.guest_link);
+      setHostLink(data.host_link);
 
       // Optionally, redirect after short delay
       // router.push("/dashboard");
