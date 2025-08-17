@@ -12,8 +12,9 @@ import {
   Typography
 } from "@mui/material";
 
-// Use environment variable
-const API_URL = process.env.NEXT_PUBLIC_API_URL + "/api/topics/";
+// Base paths for links
+const GUEST_BASE = "/in/";
+const HOST_BASE = "/out/";
 
 export default function CreateTopic() {
   const router = useRouter();
@@ -34,9 +35,8 @@ export default function CreateTopic() {
   }>({});
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Placeholder token; integrate with your auth system
-  const authToken = "YOUR_AUTH_TOKEN_HERE";
+  const [guestLink, setGuestLink] = useState("");
+  const [hostLink, setHostLink] = useState("");
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -45,9 +45,7 @@ export default function CreateTopic() {
     const newErrors: typeof errors = {};
 
     // Frontend validation
-    if (!title.trim()) {
-      newErrors.title = "Title is required.";
-    }
+    if (!title.trim()) newErrors.title = "Title is required.";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -71,10 +69,7 @@ export default function CreateTopic() {
         body: JSON.stringify(topicData),
       });
 
-      if (response.ok) {
-        // On success, redirect to dashboard
-        router.push("/dashboard");
-      } else {
+      if (!response.ok) {
         const errorData = await response.json();
         const backendErrors: { [key: string]: string } = {};
         for (const key in errorData) {
@@ -83,10 +78,21 @@ export default function CreateTopic() {
             : String(errorData[key]);
         }
         setErrors(backendErrors);
+        setIsSubmitting(false);
+        return;
       }
+
+      const data = await response.json();
+
+      // Set the guest and host links
+      setGuestLink(`${GUEST_BASE}${data.code}`);
+      setHostLink(`${HOST_BASE}${data.code}`);
+
+      // Optionally, redirect after short delay
+      // router.push("/dashboard");
     } catch (error) {
-      setErrors({ general: "Network error. Make sure the backend is running." });
       console.error(error);
+      setErrors({ general: "Network error. Make sure the backend is running." });
     }
 
     setIsSubmitting(false);
@@ -99,7 +105,6 @@ export default function CreateTopic() {
           Create a New Topic
         </Typography>
 
-        {/* Topic Title */}
         <TextField
           label="Topic / Question"
           variant="outlined"
@@ -112,7 +117,6 @@ export default function CreateTopic() {
           sx={{ mb: 3 }}
         />
 
-        {/* Description (optional) */}
         <TextField
           label="Description (optional)"
           variant="outlined"
@@ -126,7 +130,6 @@ export default function CreateTopic() {
           sx={{ mb: 3 }}
         />
 
-        {/* Deadline */}
         <TextField
           label="Deadline"
           type="datetime-local"
@@ -139,7 +142,6 @@ export default function CreateTopic() {
           sx={{ mb: 3 }}
         />
 
-        {/* Max Responses */}
         <TextField
           label="Max Responses"
           type="number"
@@ -151,7 +153,6 @@ export default function CreateTopic() {
           sx={{ mb: 3 }}
         />
 
-        {/* Options */}
         <FormControlLabel
           control={<Checkbox checked={allowReport} onChange={(e) => setAllowReport(e.target.checked)} />}
           label="Allow participants to see the report"
@@ -161,19 +162,20 @@ export default function CreateTopic() {
           label="Allow only logged-in users to participate"
         />
 
-        {/* Submit */}
         <Box sx={{ mt: 4 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-          >
+          <Button variant="contained" color="primary" onClick={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? "Submitting..." : "Create Topic"}
           </Button>
         </Box>
 
-        {/* General errors */}
+        {/* Show the generated links */}
+        {guestLink && hostLink && (
+          <Box sx={{ mt: 4 }}>
+            <Typography>Guest Link: <a href={guestLink}>{guestLink}</a></Typography>
+            <Typography>Host Link: <a href={hostLink}>{hostLink}</a></Typography>
+          </Box>
+        )}
+
         {errors.general && (
           <Typography color="error" sx={{ mt: 2 }}>
             {errors.general}

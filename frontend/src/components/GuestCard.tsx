@@ -17,7 +17,7 @@ export default function GuestCard() {
     // TODO: validate code via API; for now navigate to /join/[code]
     const normalized = code.trim();
     setLoading(false);
-    router.push(`/join/${encodeURIComponent(normalized)}`);
+    router.push(`/in/${encodeURIComponent(normalized)}`);
   };
 
   return (
