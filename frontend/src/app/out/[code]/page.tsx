@@ -1,7 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { Container, Paper, Typography, CircularProgress } from "@mui/material";
+import { useParams, useRouter } from "next/navigation";
+import {
+  Container,
+  Paper,
+  Typography,
+  CircularProgress,
+  Button,
+  Stack,
+} from "@mui/material";
 
 interface Topic {
   title: string;
@@ -16,6 +23,7 @@ interface Topic {
 
 export default function HostPage() {
   const params = useParams();
+  const router = useRouter();
   const code = params.code as string;
 
   const [topic, setTopic] = useState<Topic | null>(null);
@@ -25,7 +33,9 @@ export default function HostPage() {
   useEffect(() => {
     const fetchTopic = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/out/${code}/`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/out/${code}/`
+        );
         if (!res.ok) throw new Error("Topic not found");
         const data = await res.json();
         setTopic(data);
@@ -47,13 +57,45 @@ export default function HostPage() {
     <Container maxWidth="md" sx={{ py: 6 }}>
       <Paper sx={{ p: 4 }}>
         <Typography variant="h4">{topic.title}</Typography>
-        {topic.description && <Typography sx={{ mt: 2 }}>{topic.description}</Typography>}
-        {topic.deadline && <Typography sx={{ mt: 2 }}>Deadline: {new Date(topic.deadline).toLocaleString()}</Typography>}
-        {topic.max_responses && <Typography>Max Responses: {topic.max_responses}</Typography>}
+
+        {topic.description && (
+          <Typography sx={{ mt: 2 }}>{topic.description}</Typography>
+        )}
+        {topic.deadline && (
+          <Typography sx={{ mt: 2 }}>
+            Deadline: {new Date(topic.deadline).toLocaleString()}
+          </Typography>
+        )}
+        {topic.max_responses && (
+          <Typography sx={{ mt: 1 }}>
+            Max Responses: {topic.max_responses}
+          </Typography>
+        )}
         <Typography sx={{ mt: 2 }}>Code: {topic.code}</Typography>
-        {topic.allow_report && <Typography>Report visible to participants</Typography>}
-        {topic.only_logged_in && <Typography>Only logged-in users can participate</Typography>}
-        {/* You can add more host-only controls here */}
+        {topic.allow_report && (
+          <Typography>Report visible to participants</Typography>
+        )}
+        {topic.only_logged_in && (
+          <Typography>Only logged-in users can participate</Typography>
+        )}
+
+        {/* Host Controls */}
+        <Stack direction="row" spacing={2} sx={{ mt: 4 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => alert("Summary generation coming soon 🚀")}
+          >
+            Generate Summary
+          </Button>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => router.push(`/out/${code}/responses`)}
+          >
+            View Responses
+          </Button>
+        </Stack>
       </Paper>
     </Container>
   );

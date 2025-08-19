@@ -63,7 +63,7 @@ export default function CreateTopic() {
     };
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topics/`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topic-create/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(topicData),

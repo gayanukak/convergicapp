@@ -93,21 +93,31 @@ class ResponseCreateView(APIView):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class HostTopicListView(APIView):
+    """ List all topics (later filter by host user) """
+    def get(self, request):
+        topics = Topic.objects.all().order_by("-created_at")
+        serializer = TopicSerializer(topics, many=True)
+        return Response(serializer.data)
 
-class HostView(APIView):
-    """
-    For host/admin to manage topic (out link)
-    """
 
+class HostTopicDetailView(APIView):
+    """ Topic detail (with responses count, summary placeholder) """
     def get(self, request, code):
         topic = get_object_or_404(Topic, code=code)
         return Response({
             "title": topic.title,
             "description": topic.description,
             "deadline": topic.deadline,
-            "max_responses": topic.max_responses,
-            "allow_report": topic.allow_report,
-            "only_logged_in": topic.only_logged_in,
-            "created_at": topic.created_at,
-            "total_responses": topic.responses.count(),
+            "responses_count": topic.responses.count(),
+            "summary": None,  # later AI-generated
         })
+
+
+class HostResponseListView(APIView):
+    """ View all responses for a topic """
+    def get(self, request, code):
+        topic = get_object_or_404(Topic, code=code)
+        responses = topic.responses.all().order_by("created_at")
+        serializer = ResponseSerializer(responses, many=True)
+        return Response(serializer.data)
