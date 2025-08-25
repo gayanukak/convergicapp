@@ -11,7 +11,7 @@ export default function HostCard() {
 
   if (status === "loading") {
     return (
-      <Paper elevation={4} sx={{ p: 4, textAlign: "center" }}>
+      <Paper elevation={4} sx={{ p: 4, textAlign: "center", width: "100%" }}>
         <Typography>Checking your session…</Typography>
       </Paper>
     );
@@ -19,15 +19,25 @@ export default function HostCard() {
 
   if (session) {
     return (
-      <Paper elevation={4} sx={{ p: 4, textAlign: "center" }}>
+      <Paper elevation={4} sx={{ p: 4, textAlign: "center", width: "100%" }}>
         <Typography variant="h6" gutterBottom>
           Signed in as {session.user?.email}
         </Typography>
-        <Box sx={{ mt: 3, display: "flex", gap: 2, justifyContent: "center" }}>
-          <Button variant="contained" color="primary" onClick={() => router.push("/dashboard")}>
+        <Box sx={{ mt: 3, display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ px: 4, py: 1.5 }}
+            onClick={() => router.push("/dashboard")}
+          >
             Go to Dashboard
           </Button>
-          <Button variant="outlined" color="secondary" onClick={() => signOut()}>
+          <Button
+            variant="outlined"
+            color="primary"
+            sx={{ px: 4, py: 1.5 }}
+            onClick={() => signOut()}
+          >
             Sign Out
           </Button>
         </Box>
@@ -36,7 +46,7 @@ export default function HostCard() {
   }
 
   return (
-    <Paper elevation={4} sx={{ p: 4, textAlign: "center" }}>
+    <Paper elevation={4} sx={{ p: 4, textAlign: "center", width: "100%" }}>
       <Typography variant="h5" gutterBottom>
         Want to collect ideas?
       </Typography>
@@ -48,7 +58,7 @@ export default function HostCard() {
           variant="contained"
           color="primary"
           startIcon={<GoogleIcon />}
-          sx={{ px: 4, py: 1.5, fontSize: "1rem" }}
+          sx={{ px: 4, py: 1.5 }}
           onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
         >
           Sign in with Google

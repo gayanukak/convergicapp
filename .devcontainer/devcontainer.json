@@ -1,0 +1,5 @@
+{
+  "name": "Next.js Dev",
+  "postCreateCommand": "cd frontend && npm install",
+  "forwardPorts": [3000]
+}

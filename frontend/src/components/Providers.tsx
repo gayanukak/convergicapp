@@ -8,11 +8,7 @@ import { SessionProvider } from "next-auth/react";
 
 const clientSideEmotionCache = createEmotionCache();
 
-export default function Providers({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
       <CacheProvider value={clientSideEmotionCache}>

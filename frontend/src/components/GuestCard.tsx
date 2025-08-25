@@ -14,14 +14,13 @@ export default function GuestCard() {
     if (!code.trim()) return;
     setLoading(true);
 
-    // TODO: validate code via API; for now navigate to /join/[code]
     const normalized = code.trim();
     setLoading(false);
     router.push(`/in/${encodeURIComponent(normalized)}`);
   };
 
   return (
-    <Paper elevation={4} sx={{ p: 4, textAlign: "center" }}>
+    <Paper elevation={4} sx={{ p: 4, textAlign: "center", width: "100%" }}>
       <Typography variant="h5" gutterBottom>
         Want to give ideas?
       </Typography>
@@ -32,8 +31,8 @@ export default function GuestCard() {
       {!showCodeField ? (
         <Button
           variant="contained"
-          color="secondary"
-          sx={{ px: 4, py: 1.5, fontSize: "1rem" }}
+          color="primary"
+          sx={{ px: 4, py: 1.5 }}
           onClick={() => setShowCodeField(true)}
         >
           Enter Code
@@ -50,7 +49,7 @@ export default function GuestCard() {
             inputProps={{ "aria-label": "Join code" }}
             autoFocus
           />
-          <Button type="submit" variant="contained" color="secondary" fullWidth disabled={loading}>
+          <Button type="submit" variant="contained" color="primary" fullWidth disabled={loading}>
             {loading ? "Joining…" : "Join"}
           </Button>
         </Box>
