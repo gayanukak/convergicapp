@@ -3,10 +3,25 @@ import React from "react";
 import { Container, Typography, Grid, Box } from "@mui/material";
 import HostCard from "@/components/HostCard";
 import GuestCard from "@/components/GuestCard";
+import Background from "@/components/Background";
 
 export default function HomePage(): React.ReactElement {
+  const mode: "spark" | "nebula" = "spark";
   return (
-    <div className="page">
+    <div
+      style={{
+        minHeight: "100vh",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        backgroundImage: `url('/nnnoise (5).svg')`,
+        backgroundSize: "cover",     // cover entire screen
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+        zIndex: -1,
+      }}
+    >
       <Container maxWidth="lg" sx={{ py: 8 }} className="main">
         <Box sx={{ textAlign: "center", mb: 6 }}>
           <Typography variant="h3" component="h1" gutterBottom>
@@ -18,13 +33,13 @@ export default function HomePage(): React.ReactElement {
         </Box>
 
         <Grid container spacing={4}>
-          <Grid size={6}>
-            <HostCard />
-          </Grid>
-          <Grid size={6}>
-            <GuestCard />
-          </Grid>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <HostCard />
         </Grid>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <GuestCard />
+        </Grid>
+      </Grid>
 
         <Box sx={{ mt: 8, textAlign: "center" }}>
           <Typography variant="h4" gutterBottom>
