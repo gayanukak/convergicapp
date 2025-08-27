@@ -15,7 +15,7 @@ export default function HomePage(): React.ReactElement {
         left: 0,
         width: "100%",
         height: "100%",
-        backgroundImage: `url('/nnnoise (5).svg')`,
+        backgroundImage: `url('/background/nnnoise.svg')`,
         backgroundSize: "cover",     // cover entire screen
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",

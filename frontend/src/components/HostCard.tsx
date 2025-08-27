@@ -1,49 +1,10 @@
 "use client";
 import React from "react";
 import { Paper, Typography, Button, Box } from "@mui/material";
-import GoogleIcon from "@mui/icons-material/Google";
-import { signIn, useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function HostCard() {
-  const { data: session, status } = useSession();
   const router = useRouter();
-
-  if (status === "loading") {
-    return (
-      <Paper elevation={4} sx={{ p: 4, textAlign: "center", width: "100%" }}>
-        <Typography>Checking your session…</Typography>
-      </Paper>
-    );
-  }
-
-  if (session) {
-    return (
-      <Paper elevation={4} sx={{ p: 4, textAlign: "center", width: "100%" }}>
-        <Typography variant="h6" gutterBottom>
-          Signed in as {session.user?.email}
-        </Typography>
-        <Box sx={{ mt: 3, display: "flex", gap: 2, justifyContent: "center", flexWrap: "wrap" }}>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ px: 4, py: 1.5 }}
-            onClick={() => router.push("/dashboard")}
-          >
-            Go to Dashboard
-          </Button>
-          <Button
-            variant="outlined"
-            color="primary"
-            sx={{ px: 4, py: 1.5 }}
-            onClick={() => signOut()}
-          >
-            Sign Out
-          </Button>
-        </Box>
-      </Paper>
-    );
-  }
 
   return (
     <Paper elevation={4} sx={{ p: 4, textAlign: "center", width: "100%" }}>
@@ -57,11 +18,10 @@ export default function HostCard() {
         <Button
           variant="contained"
           color="primary"
-          startIcon={<GoogleIcon />}
           sx={{ px: 4, py: 1.5 }}
-          onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+          onClick={() => router.push("/create")}
         >
-          Sign in with Google
+          Create Topic
         </Button>
       </Box>
     </Paper>

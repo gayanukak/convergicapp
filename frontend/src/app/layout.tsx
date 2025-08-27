@@ -43,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     palette: {
       mode: mode === "spark" ? "light" : "dark",
       primary: {
-        main: mode === "spark" ? "#ff9800" : "#9c27b0", // orange for spark, purple for nebula
+        main: mode === "spark" ? "#ff9800" : "#7b3fbb", // orange for spark, purple for nebula
       },
     },
     typography: {
