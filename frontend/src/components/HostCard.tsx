@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import { Paper, Typography, Button, Box } from "@mui/material";
 import { useRouter } from "next/navigation";
@@ -7,7 +8,10 @@ export default function HostCard() {
   const router = useRouter();
 
   return (
-    <Paper elevation={4} sx={{ p: 4, textAlign: "center", width: "100%" }}>
+    <Paper
+      elevation={4}
+      sx={{ p: 4, textAlign: "center", width: "100%", borderRadius: 3 }}
+    >
       <Typography variant="h5" gutterBottom>
         Want to collect ideas?
       </Typography>

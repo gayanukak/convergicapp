@@ -1,28 +1,25 @@
 "use client";
+
 import React from "react";
 import { Container, Typography, Grid, Box } from "@mui/material";
 import HostCard from "@/components/HostCard";
 import GuestCard from "@/components/GuestCard";
-import Background from "@/components/Background";
 
 export default function HomePage(): React.ReactElement {
-  const mode: "spark" | "nebula" = "spark";
   return (
-    <div
-      style={{
+    <Box
+      sx={{
+        position: "relative",
         minHeight: "100vh",
-        top: 0,
-        left: 0,
         width: "100%",
-        height: "100%",
-        backgroundImage: `url('/background/nnnoise.svg')`,
-        backgroundSize: "cover",     // cover entire screen
+        backgroundImage: "url('/background/nnnoise.svg')",
+        backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
-        zIndex: -1,
       }}
     >
       <Container maxWidth="lg" sx={{ py: 8 }} className="main">
+        {/* Hero Section */}
         <Box sx={{ textAlign: "center", mb: 6 }}>
           <Typography variant="h3" component="h1" gutterBottom>
             Collect. Share. Converge Ideas.
@@ -32,34 +29,45 @@ export default function HomePage(): React.ReactElement {
           </Typography>
         </Box>
 
+        {/* Host & Guest Cards */}
         <Grid container spacing={4}>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <HostCard />
+          <Grid size={{ xs: 12, md: 6 }}>
+            <HostCard />
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <GuestCard />
+          </Grid>
         </Grid>
-        <Grid size={{ xs: 12, md: 6 }}>
-          <GuestCard />
-        </Grid>
-      </Grid>
 
+        {/* About Section */}
         <Box sx={{ mt: 8, textAlign: "center" }}>
           <Typography variant="h4" gutterBottom>
             What is Convergic.io?
           </Typography>
-          <Typography variant="body1" sx={{ maxWidth: "700px", mx: "auto", mb: 4 }}>
-            Convergic.io is a collaborative platform where ideas meet structure. Post topics, collect responses,
-            and let AI summarize key points for you. Perfect for brainstorming, surveys, and group decision-making.
+          <Typography
+            variant="body1"
+            sx={{ maxWidth: "700px", mx: "auto", mb: 4 }}
+          >
+            Convergic.io is a collaborative platform where ideas meet structure.
+            Post topics, collect responses, and let AI summarize key points for
+            you. Perfect for brainstorming, surveys, and group decision-making.
           </Typography>
 
           <Typography variant="h4" gutterBottom>
             How it Works
           </Typography>
-          <Typography variant="body1" sx={{ maxWidth: "700px", mx: "auto" }}>
-            1. Hosts create topics with questions.<br />
-            2. Guests join using a code or link.<br />
+          <Typography
+            variant="body1"
+            sx={{ maxWidth: "700px", mx: "auto" }}
+          >
+            1. Hosts create topics with questions.
+            <br />
+            2. Guests join using a code or link.
+            <br />
             3. AI summarizes all input for clear insights.
           </Typography>
         </Box>
       </Container>
-    </div>
+    </Box>
   );
 }

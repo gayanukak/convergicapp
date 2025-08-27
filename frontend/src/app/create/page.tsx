@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -7,12 +8,16 @@ import {
   Checkbox,
   Container,
   FormControlLabel,
+  Grid,
   Paper,
   TextField,
-  Typography
+  Typography,
 } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import dayjs, { Dayjs } from "dayjs";
 
-// Base paths for links
 const GUEST_BASE = "/in/";
 const HOST_BASE = "/out/";
 
@@ -21,7 +26,7 @@ export default function CreateTopic() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [deadline, setDeadline] = useState("");
+  const [deadline, setDeadline] = useState<Dayjs | null>(dayjs().add(5, "minute")); // default minimal future
   const [maxResponses, setMaxResponses] = useState("");
   const [allowReport, setAllowReport] = useState(false);
   const [onlyLoggedIn, setOnlyLoggedIn] = useState(false);
@@ -44,8 +49,29 @@ export default function CreateTopic() {
 
     const newErrors: typeof errors = {};
 
-    // Frontend validation
-    if (!title.trim()) newErrors.title = "Title is required.";
+    // Title validation
+    if (!title.trim()) newErrors.title = "Topic / Question is required.";
+    if (title.trim().length > 1000)
+      newErrors.title = "Topic is too long (max 1000 characters).";
+
+    // Description validation
+    if (description.trim().length > 5000)
+      newErrors.description = "Description too long (max 5000 characters).";
+
+    // At least one of deadline or maxResponses
+    if (!deadline && !maxResponses) {
+      newErrors.general = "Please provide either a deadline or max responses.";
+    }
+
+    // Max responses validation
+    if (maxResponses && (Number(maxResponses) <= 0 || Number(maxResponses) > 100)) {
+      newErrors.maxResponses = "Max responses must be between 1 and 100.";
+    }
+
+    // Deadline must be in the future
+    if (deadline && deadline.isBefore(dayjs())) {
+      newErrors.deadline = "Deadline must be in the future.";
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -56,18 +82,21 @@ export default function CreateTopic() {
     const topicData = {
       title: title.trim(),
       description: description.trim() || null,
-      deadline: deadline || null,
+      deadline: deadline ? deadline.toISOString() : null,
       max_responses: maxResponses ? Number(maxResponses) : null,
       allow_report: allowReport,
       only_logged_in: onlyLoggedIn,
     };
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/topic-create/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(topicData),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/topic-create/`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(topicData),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -83,105 +112,156 @@ export default function CreateTopic() {
       }
 
       const data = await response.json();
-
-      // Set the guest and host links
       setGuestLink(data.guest_link);
       setHostLink(data.host_link);
-
-      // Optionally, redirect after short delay
-      // router.push("/dashboard");
     } catch (error) {
       console.error(error);
-      setErrors({ general: "Network error. Make sure the backend is running." });
+      setErrors({
+        general: "Network error. Make sure the backend is running.",
+      });
     }
 
     setIsSubmitting(false);
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 6 }}>
-      <Paper sx={{ p: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Create a New Topic
-        </Typography>
-
-        <TextField
-          label="Topic / Question"
-          variant="outlined"
-          fullWidth
-          required
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          error={!!errors.title}
-          helperText={errors.title}
-          sx={{ mb: 3 }}
-        />
-
-        <TextField
-          label="Description (optional)"
-          variant="outlined"
-          fullWidth
-          multiline
-          rows={3}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          error={!!errors.description}
-          helperText={errors.description}
-          sx={{ mb: 3 }}
-        />
-
-        <TextField
-          label="Deadline"
-          type="datetime-local"
-          InputLabelProps={{ shrink: true }}
-          fullWidth
-          value={deadline}
-          onChange={(e) => setDeadline(e.target.value)}
-          error={!!errors.deadline}
-          helperText={errors.deadline}
-          sx={{ mb: 3 }}
-        />
-
-        <TextField
-          label="Max Responses"
-          type="number"
-          fullWidth
-          value={maxResponses}
-          onChange={(e) => setMaxResponses(e.target.value)}
-          error={!!errors.maxResponses}
-          helperText={errors.maxResponses}
-          sx={{ mb: 3 }}
-        />
-
-        <FormControlLabel
-          control={<Checkbox checked={allowReport} onChange={(e) => setAllowReport(e.target.checked)} />}
-          label="Allow participants to see the report"
-        />
-        <FormControlLabel
-          control={<Checkbox checked={onlyLoggedIn} onChange={(e) => setOnlyLoggedIn(e.target.checked)} />}
-          label="Allow only logged-in users to participate"
-        />
-
-        <Box sx={{ mt: 4 }}>
-          <Button variant="contained" color="primary" onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Create Topic"}
-          </Button>
-        </Box>
-
-        {/* Show the generated links */}
-        {guestLink && hostLink && (
-          <Box sx={{ mt: 4 }}>
-            <Typography>Guest Link: <a href={guestLink}>{guestLink}</a></Typography>
-            <Typography>Host Link: <a href={hostLink}>{hostLink}</a></Typography>
-          </Box>
-        )}
-
-        {errors.general && (
-          <Typography color="error" sx={{ mt: 2 }}>
-            {errors.general}
+    <Box
+      sx={{
+        position: "relative",
+        minHeight: "100vh",
+        width: "100%",
+        backgroundImage: "url('/background/nnnoise.svg')",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+      }}
+    >
+      <Container maxWidth="md" sx={{ py: 6 }}>
+        <Paper sx={{ p: 4 }}>
+          <Typography variant="h4" gutterBottom>
+            Create a New Topic
           </Typography>
-        )}
-      </Paper>
-    </Container>
+
+          {/* Topic Field */}
+          <Typography variant="subtitle1" sx={{ mb: 1 }}>
+            Topic / Question
+          </Typography>
+          <TextField
+            variant="outlined"
+            fullWidth
+            required
+            placeholder="Enter your topic or question here"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            error={!!errors.title}
+            helperText={errors.title || `${title.length}/1000 characters`}
+            sx={{ mb: 3 }}
+          />
+
+          {/* Description Field */}
+          <Typography variant="subtitle1" sx={{ mb: 1 }}>
+            Description (optional)
+          </Typography>
+          <TextField
+            variant="outlined"
+            fullWidth
+            multiline
+            rows={4}
+            placeholder="Enter a description or additional details (optional)"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            error={!!errors.description}
+            helperText={errors.description || `${description.length}/5000 characters`}
+            sx={{ mb: 3 }}
+          />
+
+          {/* Deadline + Max Responses */}
+          <Typography variant="subtitle1" sx={{ mb: 1 }}>
+            Deadline / Max Responses
+          </Typography>
+          <Grid container spacing={2} sx={{ mb: 3 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateTimePicker
+                  label="Deadline"
+                  value={deadline}
+                  onChange={(newValue) => {
+                    // prevent setting past date
+                    if (newValue && newValue.isBefore(dayjs())) {
+                      setDeadline(dayjs().add(5, "minute"));
+                    } else {
+                      setDeadline(newValue);
+                    }
+                  }}
+                  minDateTime={dayjs().add(5, "minute")}
+                  slots={{ textField: TextField }}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      error: !!errors.deadline,
+                      helperText: errors.deadline,
+                    },
+                  }}
+                  enableAccessibleFieldDOMStructure={false}
+                />
+              </LocalizationProvider>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <TextField
+                label="Max Responses"
+                type="number"
+                fullWidth
+                value={maxResponses}
+                onChange={(e) => setMaxResponses(e.target.value)}
+                error={!!errors.maxResponses}
+                helperText={errors.maxResponses}
+                inputProps={{ max: 100 }}
+              />
+            </Grid>
+          </Grid>
+
+          {/* Options */}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={allowReport}
+                onChange={(e) => setAllowReport(e.target.checked)}
+              />
+            }
+            label="Allow participants to see the report"
+          />
+
+          <Box sx={{ mt: 4 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Submitting..." : "Create Topic"}
+            </Button>
+          </Box>
+
+          {/* Links */}
+          {guestLink && hostLink && (
+            <Box sx={{ mt: 4 }}>
+              <Typography>
+                Guest Link: <a href={guestLink}>{guestLink}</a>
+              </Typography>
+              <Typography>
+                Host Link: <a href={hostLink}>{hostLink}</a>
+              </Typography>
+            </Box>
+          )}
+
+          {/* General Errors */}
+          {errors.general && (
+            <Typography color="error" sx={{ mt: 2 }}>
+              {errors.general}
+            </Typography>
+          )}
+        </Paper>
+      </Container>
+    </Box>
   );
 }

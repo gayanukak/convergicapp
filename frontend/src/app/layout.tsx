@@ -2,10 +2,9 @@
 
 import "@/app/globals.css";
 import Providers from "../components/Providers";
-import React, { useState, createContext, useContext } from "react";
+import React, { useState, createContext } from "react";
 import {
   ThemeProvider,
-  createTheme,
   CssBaseline,
   Button,
   Box,
@@ -14,6 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Kanit } from "next/font/google";
+import { getTheme } from "@/theme";
 
 // Load Google font "Kanit"
 const kanit = Kanit({
@@ -21,7 +21,7 @@ const kanit = Kanit({
   weight: "400",
 });
 
-// Context for theme mode switching (spark = light, nebula = dark)
+// Context for theme mode switching
 export const ThemeModeContext = createContext<{
   mode: "spark" | "nebula";
   toggleMode: (newMode: "spark" | "nebula") => void;
@@ -33,38 +33,29 @@ export const ThemeModeContext = createContext<{
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [mode, setMode] = useState<"spark" | "nebula">("spark");
 
-  // Function to toggle between spark and nebula modes
+  // Toggle between Spark and Nebula
   const toggleMode = (newMode: "spark" | "nebula") => {
     setMode(newMode);
   };
-
-  // Create Material UI theme based on selected mode
-  const theme = createTheme({
-    palette: {
-      mode: mode === "spark" ? "light" : "dark",
-      primary: {
-        main: mode === "spark" ? "#ff9800" : "#7b3fbb", // orange for spark, purple for nebula
-      },
-    },
-    typography: {
-      fontFamily: kanit.style.fontFamily,
-    },
-  });
 
   return (
     <html lang="en" className={kanit.className} data-theme={mode}>
       <body>
         <Providers>
           <ThemeModeContext.Provider value={{ mode, toggleMode }}>
-            <ThemeProvider theme={theme}>
+            <ThemeProvider theme={getTheme(mode)}>
               <CssBaseline />
 
-              {/* Header / AppBar with toggle buttons */}
+              {/* Header */}
               <AppBar position="sticky" color="primary" enableColorOnDark>
                 <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
                   <Typography variant="h6">Convergic</Typography>
                   <Box>
-                    <Button color="inherit" onClick={() => toggleMode("spark")}>
+                    <Button
+                      color="inherit"
+                      onClick={() => toggleMode("spark")}
+                      sx={{ mr: 1 }}
+                    >
                       Spark
                     </Button>
                     <Button color="inherit" onClick={() => toggleMode("nebula")}>
@@ -84,7 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   textAlign: "center",
                   py: 4,
                   bgcolor: "primary.main",
-                  color: "primary.contrastText", // ensures readable text
+                  color: "primary.contrastText",
                 }}
               >
                 © {new Date().getFullYear()} Convergic. All rights reserved.

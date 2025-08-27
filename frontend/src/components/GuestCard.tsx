@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import { Paper, Typography, Button, Box, TextField } from "@mui/material";
 import { useRouter } from "next/navigation";
@@ -12,15 +13,19 @@ export default function GuestCard() {
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!code.trim()) return;
-    setLoading(true);
 
+    setLoading(true);
     const normalized = code.trim();
     setLoading(false);
+
     router.push(`/in/${encodeURIComponent(normalized)}`);
   };
 
   return (
-    <Paper elevation={4} sx={{ p: 4, textAlign: "center", width: "100%" }}>
+    <Paper
+      elevation={4}
+      sx={{ p: 4, textAlign: "center", width: "100%", borderRadius: 3 }}
+    >
       <Typography variant="h5" gutterBottom>
         Want to give ideas?
       </Typography>
@@ -49,7 +54,13 @@ export default function GuestCard() {
             inputProps={{ "aria-label": "Join code" }}
             autoFocus
           />
-          <Button type="submit" variant="contained" color="primary" fullWidth disabled={loading}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            disabled={loading}
+          >
             {loading ? "Joining…" : "Join"}
           </Button>
         </Box>
