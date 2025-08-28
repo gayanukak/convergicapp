@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Box,
@@ -17,6 +17,9 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs, { Dayjs } from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 const GUEST_BASE = "/in/";
 const HOST_BASE = "/out/";
@@ -26,7 +29,7 @@ export default function CreateTopic() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [deadline, setDeadline] = useState<Dayjs | null>(dayjs().add(5, "minute")); // default minimal future
+  const [deadline, setDeadline] = useState<Dayjs | null>(null); // init null (fix SSR mismatch)
   const [maxResponses, setMaxResponses] = useState("");
   const [allowReport, setAllowReport] = useState(false);
   const [onlyLoggedIn, setOnlyLoggedIn] = useState(false);
@@ -42,6 +45,11 @@ export default function CreateTopic() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [guestLink, setGuestLink] = useState("");
   const [hostLink, setHostLink] = useState("");
+
+  // ✅ Initialize deadline only on client
+  useEffect(() => {
+    setDeadline(dayjs().add(5, "minute"));
+  }, []);
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -82,7 +90,8 @@ export default function CreateTopic() {
     const topicData = {
       title: title.trim(),
       description: description.trim() || null,
-      deadline: deadline ? deadline.toISOString() : null,
+      // ✅ Always send UTC to backend
+      deadline: deadline ? deadline.utc().toISOString() : null,
       max_responses: maxResponses ? Number(maxResponses) : null,
       allow_report: allowReport,
       only_logged_in: onlyLoggedIn,
@@ -186,7 +195,6 @@ export default function CreateTopic() {
                   label="Deadline"
                   value={deadline}
                   onChange={(newValue) => {
-                    // prevent setting past date
                     if (newValue && newValue.isBefore(dayjs())) {
                       setDeadline(dayjs().add(5, "minute"));
                     } else {
