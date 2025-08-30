@@ -1,0 +1,12 @@
+asgiref==3.9.1
+dj_database_url==3.0.1
+Django==5.2.5
+django-cors-headers==4.7.0
+djangorestframework==3.16.1
+psycopg==3.2.9
+psycopg-binary==3.2.9
+python-dotenv==1.1.1
+setuptools==80.9.0
+sqlparse==0.5.3
+tzdata==2025.2
+wheel==0.45.1
