@@ -1,7 +1,5 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma } from "@/lib/prisma"; // <-- use the singleton
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -10,9 +8,9 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
   ],
-  adapter: PrismaAdapter(prisma),
+  
   session: {
-    strategy: "database", // you have Session model in schema.prisma, so this is fine
+    strategy: "jwt", // you have Session model in schema.prisma, so this is fine
   },
   secret: process.env.NEXTAUTH_SECRET,
   // IMPORTANT: remove `pages` overrides so built-in pages are used
