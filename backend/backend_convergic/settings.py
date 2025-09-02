@@ -18,7 +18,7 @@ SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]  # will raise KeyError if missing
 
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 # ------------------------
 # APPLICATION DEFINITION
