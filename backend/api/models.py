@@ -13,7 +13,7 @@ class Topic(models.Model):
     deadline = models.DateTimeField(null=True, blank=True)
     max_responses = models.PositiveIntegerField(null=True, blank=True)
     allow_report = models.BooleanField(default=False)
-    only_logged_in = models.BooleanField(default=False)
+    # only_logged_in = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):

@@ -14,7 +14,7 @@ class TopicSerializer(serializers.ModelSerializer):
             "deadline",
             "max_responses",
             "allow_report",
-            "only_logged_in",
+            # "only_logged_in",
             "created_at",
         ]
         # code is generated server-side; created_at is auto

@@ -59,8 +59,8 @@ export default function CreateTopic() {
 
     // Title validation
     if (!title.trim()) newErrors.title = "Topic / Question is required.";
-    if (title.trim().length > 1000)
-      newErrors.title = "Topic is too long (max 1000 characters).";
+    if (title.trim().length > 250)
+      newErrors.title = "Topic is too long (max 250 characters).";
 
     // Description validation
     if (description.trim().length > 5000)
@@ -99,7 +99,7 @@ export default function CreateTopic() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/topic-create/`,
+        `http://backend:8000/api/topic-create/`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

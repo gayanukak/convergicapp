@@ -26,10 +26,10 @@ class TopicCreateView(APIView):
                     "deadline": topic.deadline,
                     "max_responses": topic.max_responses,
                     "allow_report": topic.allow_report,
-                    "only_logged_in": topic.only_logged_in,
+                    # "only_logged_in": topic.only_logged_in,
                     "created_at": topic.created_at,
-                    "guest_link": f"/in/{topic.code}/",
-                    "host_link": f"/out/{topic.code}/",
+                    # "guest_link": f"/in/{topic.code}/",
+                    # "host_link": f"/out/{topic.code}/",
                 },
                 status=status.HTTP_201_CREATED,
             )
