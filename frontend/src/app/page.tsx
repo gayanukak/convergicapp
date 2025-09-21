@@ -25,7 +25,7 @@ export default function HomePage(): React.ReactElement {
             Collect. Share. Converge Ideas.
           </Typography>
           <Typography variant="body1" sx={{ mb: 4 }}>
-            Convergic.io helps you gather diverse ideas, spark innovation, and summarize insights — all in one place.
+            Convergic app helps you gather diverse ideas, spark innovation, and summarize insights — all in one place.
           </Typography>
         </Box>
 
@@ -42,13 +42,13 @@ export default function HomePage(): React.ReactElement {
         {/* About Section */}
         <Box sx={{ mt: 8, textAlign: "center" }}>
           <Typography variant="h4" gutterBottom>
-            What is Convergic.io?
+            What is Convergic app?
           </Typography>
           <Typography
             variant="body1"
             sx={{ maxWidth: "700px", mx: "auto", mb: 4 }}
           >
-            Convergic.io is a collaborative platform where ideas meet structure.
+            Convergic app is a collaborative platform where ideas meet structure.
             Post topics, collect responses, and let AI summarize key points for
             you. Perfect for brainstorming, surveys, and group decision-making.
           </Typography>

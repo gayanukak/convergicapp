@@ -99,7 +99,7 @@ export default function CreateTopic() {
 
     try {
       const response = await fetch(
-        `http://backend:8000/api/topic-create/`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/topic-create/`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -208,6 +208,13 @@ export default function CreateTopic() {
                       fullWidth: true,
                       error: !!errors.deadline,
                       helperText: errors.deadline,
+                    },
+                    actionBar: {
+                      sx: {
+                        "& .MuiButton-root:hover": {
+                          color: "#171717",
+                        },
+                      },
                     },
                   }}
                   enableAccessibleFieldDOMStructure={false}
